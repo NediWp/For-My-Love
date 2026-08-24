@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love — G + N</title>
+<style>
+  :root{
+    --ivory:#fffaf4;
+    --paper:#fffdf9;
+    --rose:#b95f63;
+    --deep:#5d232b;
+    --blush:#f3d2d0;
+    --gold:#c79a4b;
+    --ink:#3f3634;
+    --line:#e7cdbd;
+    --shadow:0 12px 35px rgba(91,43,40,.10);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    font-size:15px;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(244,190,188,.32), transparent 20%),
+      radial-gradient(circle at 92% 88%, rgba(244,190,188,.28), transparent 22%),
+      var(--ivory);
+    font-family: Georgia, "Times New Roman", serif;
+  }
+  button{font:inherit}
+  .page{
+    min-height:100vh;
+    min-height:100dvh;
+    padding:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .frame{
+    width:min(1180px,100%);
+    min-height:calc(100vh - 56px);
+    min-height:calc(100dvh - 56px);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+    background:rgba(255,253,249,.72);
+    box-shadow:var(--shadow);
+  }
+  .frame:before{
+    content:"";
+    position:absolute; inset:10px;
+    border:1px solid rgba(199,154,75,.38);
+    pointer-events:none;
+  }
+  .content{position:relative; z-index:2}
+  .opening{
+    min-height:calc(100vh - 56px);
+    min-height:calc(100dvh - 56px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:70px 9%;
+    text-align:center;
+  }
+  .opening-inner{max-width:900px}
+  .eyebrow{
+    color:var(--gold);
+    letter-spacing:.32em;
+    font-size:.82rem;
+    margin-bottom:18px;
+  }
+  h1{
+    margin:0;
+    color:var(--deep);
+    font-size:clamp(2.6rem,7vw,5.4rem);
+    font-weight:400;
+    letter-spacing:.03em;
+    line-height:1.05;
+  }
+  .monogram{
+    margin:6px 0 30px;
+    color:var(--rose);
+    font-size:clamp(1.6rem,3.2vw,2.4rem);
+    font-style:italic;
+  }
+  .ornament{color:var(--gold); letter-spacing:.5em; margin:14px 0}
+  .intro{
+    max-width:760px;
+    margin:28px auto 38px;
+    font-size:clamp(1rem,1.8vw,1.2rem);
+    line-height:1.9;
+    color:#4b4240;
+  }
+  .begin{
+    border:1px solid #d7a89e;
+    background:#f4d7d1;
+    color:var(--deep);
+    padding:15px 34px;
+    border-radius:999px;
+    cursor:pointer;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    box-shadow:0 8px 18px rgba(117,54,52,.10);
+    transition:.25s ease;
+  }
+  .begin:hover{transform:translateY(-2px);box-shadow:0 12px 22px rgba(117,54,52,.15)}
+  .signature{margin-top:28px;color:var(--deep);font-style:italic}
+  .botanical{
+    position:absolute;
+    width:180px;
+    height:260px;
+    opacity:.55;
+    color:#c98283;
+  }
+  .botanical.left{left:0;bottom:0}
+  .botanical.right{right:0;top:0;transform:scaleX(-1)}
+  .sparkle{color:var(--gold);position:absolute}
+  .s1{left:15%;top:18%}.s2{right:13%;top:24%}.s3{right:19%;bottom:18%}.s4{left:20%;bottom:15%}
+
+  #daysPage{display:none;padding:70px 7%}
+  .section-title{text-align:center}
+  .section-title h2{
+    color:var(--deep);
+    font-size:clamp(2.2rem,5vw,4rem);
+    font-weight:400;
+    margin:0;
+    line-height:1.1;
+  }
+  .section-title h2 span{color:var(--rose)}
+  .subtitle{font-size:.98rem;margin:12px 0 22px;color:#665b58}
+  .ornament-line{color:var(--gold);letter-spacing:.4em;margin-bottom:42px}
+  .day-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(96px,1fr));
+    gap:14px;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .day{
+    aspect-ratio:1/1;
+    width:100%;
+    border:1.5px solid rgba(218,193,176,.85);
+    border-radius:14px;
+    background:rgba(255,253,249,.65);
+    color:#4e4542;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    box-shadow:0 3px 12px rgba(91,43,40,.05);
+  }
+  .day:hover:not(.locked){transform:translateY(-3px);box-shadow:0 10px 20px rgba(91,43,40,.12);border-color:var(--gold)}
+  .day.unlocked{background:#f8e2dc;border-color:#e8bdb3}
+  .day.locked{opacity:.55;cursor:not-allowed}
+  .day-number{font-size:.88rem;letter-spacing:.08em}
+  .day-icon{font-size:1.15rem;margin-top:6px;color:var(--rose)}
+  .day.locked .day-icon{color:var(--gold)}
+  .footer-line{text-align:center;margin:42px 0 0;color:#806c67;font-style:italic}
+  .footer-line b{color:var(--rose)}
+
+  .modal{
+    position:fixed;inset:0;background:rgba(57,27,29,.48);
+    display:none;align-items:center;justify-content:center;
+    padding:22px;z-index:20;
+    backdrop-filter:blur(5px);
+  }
+  .modal.show{display:flex}
+  .letter{
+    width:min(920px,100%);
+    max-height:88vh;
+    overflow:hidden;
+    position:relative;
+    background:#fffaf5;
+    border:1px solid #e4c7b5;
+    border-radius:10px;
+    box-shadow:0 25px 80px rgba(38,18,18,.25);
+  }
+  .letter:before{
+    content:"";
+    position:absolute;inset:10px;
+    border:1px solid rgba(199,154,75,.38);
+    border-radius:7px;
+    pointer-events:none;
+    z-index:3;
+  }
+  .letter-scroll{
+    max-height:88vh;
+    overflow:auto;
+    padding:62px clamp(30px,6vw,78px);
+  }
+  .letter-content{position:relative;z-index:2}
+  .letter-day{color:var(--deep);font-size:clamp(2rem,5vw,3.6rem);font-weight:400;text-align:center;margin:0}
+  .letter-ornament{text-align:center;color:var(--gold);margin:10px 0 34px}
+  .note{
+    font-size:.98rem;
+    line-height:1.8;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    word-break:normal;
+    color:#3f3634;
+    max-width:100%;
+  }
+  .letter-signature{text-align:right;margin-top:32px;color:var(--deep);font-style:italic;font-size:1.2rem}
+  .close{
+    position:absolute;right:25px;top:20px;border:0;background:transparent;
+    color:var(--deep);font-size:1.6rem;cursor:pointer;z-index:4;
+  }
+  .locked-message{text-align:center;padding:30px;font-size:1.05rem;line-height:1.8}
+  .countdown{color:var(--rose);font-weight:bold}
+
+  @media(max-width:850px){
+    .page{padding:12px}
+    .frame{min-height:calc(100vh - 24px);min-height:calc(100dvh - 24px)}
+    .opening{min-height:calc(100vh - 24px);min-height:calc(100dvh - 24px);padding:56px 7%}
+    #daysPage{padding:56px 6%}
+  }
+  @media(max-width:500px){
+    .day-grid{grid-template-columns:repeat(3,1fr);gap:10px;max-width:420px}
+    .day-number{font-size:.78rem}
+    .day-icon{font-size:1rem;margin-top:4px}
+    #daysPage{padding:48px 6%}
+    .modal{padding:12px}
+    .letter{
+      width:100%;
+      max-height:92vh;
+      border-radius:8px;
+    }
+    .letter-scroll{
+      max-height:92vh;
+      padding:44px 24px 38px;
+    }
+    .letter:before{inset:8px;border-radius:6px}
+    .note{
+      font-size:.92rem;
+      line-height:1.72;
+    }
+    .letter-day{font-size:clamp(1.8rem,11vw,2.8rem)}
+    .letter-ornament{margin-bottom:24px}
+  }
+  @media(max-width:360px){
+    .day-grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<section class="page" id="openingPage">
+  <div class="frame">
+    <div class="content opening">
+      <div class="opening-inner">
+        <div class="eyebrow">A LITTLE SOMETHING FOR YOU</div>
+        <h1>FOR MY LOVE</h1>
+        <div class="monogram">G + N</div>
+        <div class="ornament">— ♥ —</div>
+        <div class="intro">
+          My love,<br><br>
+          My favorite person.<br><br>
+          I made this for you because you are so incredibly special to me.
+          Loving you has completely changed my life, and somehow, my world feels
+          softer, warmer, and so much more beautiful simply because you're in it.
+          <br><br>
+          I want you to always know — and never forget — just how deeply I love you,
+          how grateful I am for you, and how incredibly proud I am of the man you are
+          and the man you're becoming.
+          <br><br>
+          So I made you a little something: ten little reminders of my love for you.
+          One day at a time. One little piece of my heart at a time.
+        </div>
+        <button class="begin" onclick="showDays()">Begin our 10 days ♡</button>
+        <div class="signature">Giovanni ♡ Nedi</div>
+      </div>
+
+      <span class="sparkle s1">✦</span><span class="sparkle s2">✦</span>
+      <span class="sparkle s3">✦</span><span class="sparkle s4">✦</span>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="daysPage">
+  <div class="frame">
+    <div class="content" style="padding:60px 5%">
+      <div class="section-title">
+        <div class="eyebrow">G + N</div>
+        <h2>10 DAYS OF <span>US</span></h2>
+        <div class="subtitle">One little reminder every day of just how loved you are.</div>
+        <div class="ornament-line">— ♥ —</div>
+      </div>
+      <div class="day-grid" id="dayGrid"></div>
+      <div class="footer-line">Ten days. Countless reasons <b>from me, for you.</b></div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="letter">
+    <button class="close" onclick="closeModal()">×</button>
+    <div class="letter-scroll">
+      <div class="letter-content" id="letterContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const START_DATE = new Date("2026-08-24T00:00:00");
+const TOTAL_DAYS = 10;
+
+const notes = [
+  {
+    day: 1,
+    text: `Today makes it 7 months since we started this wonderful chapter and started dating, and it has hands down been the most beautiful period of my life.
+
+For the first time in my life, I’m genuinely looking forward to spending the rest of my life with someone, and that someone is you. You’ve given me peace, a safe space, and a place where I can completely be myself. I love you so, so much, and I’m endlessly grateful for you.
+
+You are my dream come true, my prayers answered, and somehow, you’ve exceeded every expectation I ever had. I know God has always loved me, but He gave me you to reaffirm it ten times over.
+
+Happy 7 months anniversary, my love. I hope you enjoy reading every message for the next 9 days, and I hope each one reminds you of just how deeply you are loved.`
+  },
+  {
+    day: 2,
+    text: `9/12/2025 — the day I realized you were different and that you were going to be my person.
+
+I know it sounds kind of crazy, but even before then, I already really liked you and felt there was something more between us. But on that day, something in my mind just settled. I felt something I hadn’t felt before, and suddenly, I just knew.
+
+It was the day I told you I wouldn’t be able to travel to Jos for Christmas. Initially, I was scared to tell you because I didn’t want to disappoint you, but then you sent me that voice note and you were so calm, patient and reassuring about the whole thing. There was something about the way you handled me in that moment that made me see you differently.
+
+I remember we spoke that night, and afterwards, I picked up my journal and simply wrote, “He’s the one.”
+
+I just had this feeling, and well, here we are. A year of knowing each other, and through it all, you’ve continued to be so intentional, reassuring, caring and tender with me. You have this way of making me feel understood and safe, and I think that’s when I knew I had found my person.`
+  },
+  {
+    day: 3,
+    text: `I know this will sound cliché and all, but loving you genuinely feels like home. It feels like I’ve finally found my place in this wonderful person, and somehow, being with you feels exactly where I’m supposed to be.
+
+There was a reel you sent me on Instagram about how the partner you choose says a lot about how much we love ourselves, and I couldn’t agree more. I think the way I love you says something about the kind of love I’ve learned I deserve, because choosing you has shown me that love doesn’t have to feel complicated or uncertain. It can feel peaceful. It can feel safe. It can feel beautiful.
+
+Loving you feels like being able to completely exhale. It feels like being understood, cared for and accepted exactly as I am. It feels like laughing until my stomach hurts, having the most random conversations, being vulnerable with you and knowing I’ll still be met with tenderness.
+
+And I think that’s my favourite thing about loving you. You make love feel easy without ever making it feel ordinary. You make me feel safe enough to be fully myself, and somehow, in loving you, I’ve found not just a person to love, but a place where my heart feels at home.`
+  },
+  {
+    day: 4,
+    text: `There are so many wonderful qualities you possess, honestly, that choosing just a few feels almost impossible. But if I had to pick some of my favourites, these would be at the top of the list.
+
+I love how kind you are, how deeply you care, and how you always show up for the people you love. I love how intentional you are about everything in your life, even the little things that most people would overlook. There is so much thoughtfulness in the way you move through the world.
+
+I love how patient you are, how you listen, and how you make people feel heard and understood. I love your generosity, your warmth, and the way you can be so gentle with the people you care about.
+
+I love how much you love your family and how seriously you take the people who matter to you. I love your ambition, your determination, and the way you keep pushing yourself to become better.
+
+But most of all, I love the heart behind all these things. The person you are when nobody is watching. The man I get to know in all the little moments. And I feel incredibly lucky that I get to call that man mine.`
+  },
+  {
+    day: 5,
+    text: `There are so many memories we’ve made over the past seven months, even from before we officially started dating, that choosing just one almost feels unfair. It makes me feel like I’m saying the others aren’t just as special, when honestly, every moment I get to spend with you is a gift. Whether we’re together in person, talking for hours, laughing over something silly, or simply existing in the same space, there’s something special about every moment with you.
+
+But if I had to choose one, it would have to be the first day we met.
+
+I remember going to the coffee place, going back to your house, going to pick up the frames, and eventually finding ourselves back in Noro’s house. After everything, it was just the two of us sitting there, talking and getting to know each other for the first time. And I remember feeling so incredibly comfortable with you. I was completely at ease, and somehow, being there with you felt almost euphoric. I just remember thinking, wow, I never want this moment to end.
+
+I could have sat there talking to you for hours and still wanted more.
+
+And since then, there have been so many moments that have felt just as beautiful. Lisa’s wedding, our pasta date in April, our time at that resort, going to the movies, you picking me up from the airport, and all the little moments in between.
+
+So maybe I don’t really have one favourite memory. Maybe my favourite thing is simply getting to make memories with you.`
+  },
+  {
+    day: 6,
+    text: `You probably don’t realise how closely I pay attention to you, but I do. I notice the little things, the things you probably don’t even think twice about.
+
+I notice how whenever you walk into a room, somehow the whole energy shifts. Everything feels a little lighter, warmer and better simply because you’re there. I notice how excited you get when you’re talking about shoes or styling, and I love watching you light up when you’re talking about something you genuinely love.
+
+I notice how sweet you are with little babies and children, and how naturally gentle and playful you are with them. I notice how jovial and kind you are, even with people others might overlook. You have this way of making people feel seen and welcomed, and I love that about you.
+
+I notice how intuitive you are too. You have this way of picking up on things, especially with me, without me always having to say what I’m feeling. Sometimes you just know when something is off or when I need a little reassurance, and I love how seen that makes me feel.
+
+And I know I always tease you about how you forget things, but I notice how you remember the smallest things I’ve told you, even things I’ve completely forgotten myself. Those little moments remind me just how much you really listen to me.
+
+I look forward to noticing you, learning more about you, and discovering all the little things that make you, you. And I hope I get to spend a lifetime doing exactly that.`
+  },
+  {
+    day: 7,
+    text: `There are so many things I admire about you, and sometimes I think I get so caught up in telling you how much I love you that I don’t tell you enough how much I genuinely respect the person you are.
+
+I admire your heart and the way you care so deeply about the people who matter to you. I admire how much responsibility you carry and how seriously you take the people you love. I admire your strength, especially the kind that doesn’t always need to be loud or seen. You’ve been through things that could have made you harder, yet you’ve managed to remain kind, loving and open.
+
+I admire your ambition, your drive and how hard you work. I love seeing you get excited about the things you’re passionate about, whether it’s your music, your photography, or the things you dream about for your future. I love hearing you talk about the family you want to build and the kind of husband and father you want to be. I have no doubt you’re going to be a wonderful one, and I genuinely admire the man you’re becoming.
+
+I admire the way you love, the way you care and the way you show up for your people. There have been so many instances where I’ve genuinely been in awe of how far you’ve gone out of your way to be there for someone you love. You give so much of yourself to the people who matter to you, and seeing that honestly inspires me.
+
+I admire so much about you, but more than anything, I admire the man you are at your core. And I feel incredibly lucky that I get to love you, watch you grow, and witness the beautiful man you’re becoming.`
+  },
+  {
+    day: 8,
+    text: `Thank you for loving me through all of me. Through my random mood swings, my overthinking, my quiet moments and even the days when I don’t really know what’s wrong with me myself. Thank you for being patient with me when I struggle to put my feelings into words and for never making me feel like I have to have everything figured out before I can come to you.
+
+Thank you for loving me on my bad days just as much as you love me on my good ones. For giving me space when I need it, but still reminding me that you’re there when I’m ready. Thank you for loving the parts of me that I’m still learning to understand and accept myself.
+
+Thank you for loving my flaws and never making me feel like I have to be perfect to deserve your love. Thank you for seeing all the complicated, messy, emotional parts of me and choosing to love me anyway.
+
+I know I’m not always the easiest person to understand, and I know I have my moments, but you’ve never made me feel like my difficult days make me difficult to love. And that means more to me than I think I’ll ever be able to explain.
+
+Thank you for loving all of me, my love. The good, the bad, the beautiful and the messy. I hope you know that I see it, I appreciate it, and I will never take it for granted.`
+  },
+  {
+    day: 9,
+    text: `I think about us sometimes and wonder what it is that makes what we have feel so different to me. And honestly, I think a big part of it is all the little things that have slowly become ours.
+
+I hope we never lose the friendship underneath our love. I hope you always feel like you can come to me, whether you have something exciting to tell me, something bothering you, or absolutely nothing to say at all. I hope we always remain two people who genuinely enjoy each other, not just two people who love each other.
+
+I hope we never lose the silliness either. The random conversations, the teasing, the stupid jokes, and those moments where we're laughing about something that probably wouldn't make sense to anybody else. I hope we always have those moments where we can forget about everything else and just be us.
+
+I hope we never lose the softness we have with each other. The ability to be vulnerable, to say “this hurt me,” or “I need you,” and know that there is still love on the other side of that conversation. I hope we keep learning how to understand each other and love each other better.
+
+I hope we never become so familiar with each other that we stop appreciating each other. I hope I never stop noticing the little things about you, and I hope you never stop noticing the little things about me. I hope we keep choosing each other, even on the ordinary days, even when life gets busy, and even when things aren't always easy.
+
+There is so much ahead of us that we don't know yet. So many things will change, and I'm sure we'll change too. But I hope that no matter how much life changes, we always find our way back to this — the laughter, the comfort, the friendship, and the love that make us us.
+
+I don't need us to stay the same. I just hope we never stop being each other's person.
+
+That's all I really want.`
+  },
+  {
+    day: 10,
+    text: `When I think about our future, I don't know exactly what it will look like, and honestly, I don't think we're meant to know everything yet. But there are a few things I hope for with all my heart.
+
+I hope we build a beautiful life together, with God always at the centre and our constant foundation. I hope that as we grow individually and together, we continue to choose Him, choose each other, and allow Him to guide us through every season that comes our way.
+
+I hope we fall more and more in love with each other. Not just in the big, exciting moments, but in the ordinary ones too. I hope we continue to pour love, kindness, patience, and light into each other, and that being together always feels like something that makes life a little softer and a little brighter.
+
+I hope we experience so much together. More birthdays, anniversaries, trips, random dates, late-night conversations, celebrations, challenges we overcome, and memories that we'll look back on years from now and smile about. I hope we get to watch each other grow into the people we're becoming and be there to celebrate every version of each other along the way.
+
+I hope we create a home filled with laughter, peace, friendship, love, and warmth. I hope we never stop making each other laugh, never stop learning each other, and never stop choosing each other.
+
+And more than anything, I hope that years from now, when we look back at where we started, we'll be grateful for every step that brought us there.
+
+These ten little notes could never capture everything I feel for you, but I hope they've given you a little glimpse into my heart and just how much you mean to me.
+
+I don't know exactly what the future holds, but I know that if God allows it, I want so much of it to be with you.
+
+I love you, Giovanni. More than these words could ever fully explain, and more than I probably know how to put into words.
+
+Always and forever,
+Nedi ♡`
+  }
+];
+
+function getUnlockedDay(){
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const start = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate());
+  const diff = Math.floor((today - start) / 86400000);
+  return Math.max(0, Math.min(TOTAL_DAYS, diff + 1));
+}
+
+function showDays(){
+  document.getElementById("openingPage").style.display="none";
+  document.getElementById("daysPage").style.display="flex";
+  window.scrollTo(0,0);
+  renderDays();
+}
+
+function renderDays(){
+  const unlocked = getUnlockedDay();
+  const grid = document.getElementById("dayGrid");
+  grid.innerHTML = "";
+  notes.forEach(n=>{
+    const btn=document.createElement("button");
+    const isUnlocked=n.day<=unlocked;
+    btn.className="day "+(isUnlocked?"unlocked":"locked");
+    btn.innerHTML=`<div class="day-number">DAY ${String(n.day).padStart(2,"0")}</div>
+                   <div class="day-icon">${isUnlocked?"♡":"🔒"}</div>`;
+    btn.onclick=()=>isUnlocked ? openNote(n.day) : showLocked(n.day);
+    grid.appendChild(btn);
+  });
+}
+
+function openNote(day){
+  const note=notes[day-1];
+  document.getElementById("letterContent").innerHTML=`
+    <h2 class="letter-day">DAY ${String(day).padStart(2,"0")}</h2>
+    <div class="letter-ornament">— ♡ —</div>
+    <div class="note">${escapeHtml(note.text)}</div>
+    <div class="letter-signature">G + N</div>`;
+  document.getElementById("modal").classList.add("show");
+}
+
+function showLocked(day){
+  const unlocked=getUnlockedDay();
+  const target=new Date(START_DATE);
+  target.setDate(target.getDate()+day-1);
+  document.getElementById("letterContent").innerHTML=`
+    <h2 class="letter-day">DAY ${String(day).padStart(2,"0")}</h2>
+    <div class="letter-ornament">— ♥ —</div>
+    <div class="locked-message">
+      <p>Slow down, my love. ♡</p>
+      <p>This little note isn't ready for you yet.</p>
+      <p>Come back on the right day and I'll have something waiting for you.</p>
+      <p class="countdown" id="countdown"></p>
+    </div>`;
+  document.getElementById("modal").classList.add("show");
+  updateCountdown(target);
+}
+
+function updateCountdown(target){
+  const el=document.getElementById("countdown");
+  if(!el) return;
+  const tick=()=>{
+    const diff=target-new Date();
+    if(diff<=0){el.textContent="It's ready. ♡"; return;}
+    const d=Math.floor(diff/86400000);
+    const h=Math.floor(diff/3600000)%24;
+    const m=Math.floor(diff/60000)%60;
+    const s=Math.floor(diff/1000)%60;
+    el.textContent=`Unlocks in ${d}d ${h}h ${m}m ${s}s`;
+    setTimeout(tick,1000);
+  };
+  tick();
+}
+
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("modal").addEventListener("click",e=>{
+  if(e.target.id==="modal") closeModal();
+});
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+</script>
+</body>
+</html>
